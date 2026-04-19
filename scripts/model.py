@@ -1,29 +1,23 @@
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
 
 def train_model():
-    df = pd.read_csv("data/processed_data.csv")
+    # Dummy training data
+    df = pd.DataFrame({
+        "speed": [30, 80, 50, 90],
+        "acceleration": [0, -5, 1, 6],
+        "gyro": [0.2, 2.5, 0.5, 3],
+        "label": [0, 1, 0, 1]
+    })
 
-    df["label"] = (
-        df["speeding"] |
-        df["harsh_braking"] |
-        df["rapid_acceleration"] |
-        df["sharp_turn"]
-    )
-
-    X = df[["speed", "acceleration", "gyro", "speed_avg", "acc_avg"]]
+    X = df[["speed", "acceleration", "gyro"]]
     y = df["label"]
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-
     model = RandomForestClassifier()
-    model.fit(X_train, y_train)
+    model.fit(X, y)
 
-    preds = model.predict(X_test)
+    return model
 
-    print(classification_report(y_test, preds))
-
-if __name__ == "__main__":
-    train_model()
+def predict_risk(model, data):
+    X = [[data["speed"], data["acceleration"], data["gyro"]]]
+    return model.predict(X)[0]
