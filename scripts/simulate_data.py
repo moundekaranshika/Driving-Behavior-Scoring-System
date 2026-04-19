@@ -1,19 +1,46 @@
 import pandas as pd
 import numpy as np
+import os
+
+os.makedirs("data", exist_ok=True)
 
 np.random.seed(42)
 
-data = {
-    "speed": np.random.normal(40, 15, 200),  # km/h
-    "acceleration": np.random.normal(0, 2, 200),
-    "gyro": np.random.normal(0, 1, 200)  # turning
-}
+n = 300
+time = pd.date_range(start="2026-01-01", periods=n, freq="S")
 
-df = pd.DataFrame(data)
+# Simulate smooth driving
+speed = []
+current_speed = 20
 
-# Add timestamp
-df["time"] = pd.date_range(start="2026-01-01", periods=200, freq="S")
+for _ in range(n):
+    change = np.random.normal(0, 2)
+    current_speed = max(0, current_speed + change)
+    speed.append(current_speed)
+
+speed = np.array(speed)
+
+# Acceleration (derivative of speed)
+acceleration = np.diff(speed, prepend=speed[0])
+
+# Add occasional harsh events
+for i in range(0, n, 50):
+    acceleration[i] += np.random.choice([5, -5])
+
+# Gyroscope (turning)
+gyro = np.random.normal(0, 0.5, n)
+
+# Add sharp turns occasionally
+for i in range(25, n, 60):
+    gyro[i] += np.random.choice([3, -3])
+
+df = pd.DataFrame({
+    "time": time,
+    "speed": speed,
+    "acceleration": acceleration,
+    "gyro": gyro
+})
 
 df.to_csv("data/simulated_data.csv", index=False)
 
-print("Simulated data created!")
+print("Realistic driving data generated!")
