@@ -7,7 +7,7 @@ os.makedirs("data", exist_ok=True)
 np.random.seed(42)
 
 n = 300
-time = pd.date_range(start="2026-01-01", periods=n, freq="S")
+time = pd.date_range(start="2026-01-01", periods=n, freq="s")
 
 # Simulate smooth driving
 speed = []
